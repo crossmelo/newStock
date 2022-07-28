@@ -175,6 +175,7 @@ function fetch(total) {
   return new Promise((resolve, reject) => {
     const url = `http://qt.gtimg.cn/r=${Math.random()}q=${total}`;
     request({ url: url, encoding: null }, (err, response, body) => {
+      // console.clear(); // 可以清屏防止卡顿
       try {
         const totalList = [];
         const mapList = [...Array.from({ length }).keys()].map(() => []);
@@ -237,6 +238,7 @@ function fetch(total) {
           const b = index % length;
           mapList[b].push(ele);
         });
+        // console.clear(); // 可以清屏防止卡顿
         mapList.forEach(ele => {
           try {
             console.log(
