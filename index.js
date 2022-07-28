@@ -212,16 +212,17 @@ function fetch(total) {
 
                 const percent = list2[2] ? Number(list2[2]) : 0;
                 const shortPer = percent.toFixed(1);
+                const shortPerStr = (percent < 0 || percent > 9.98) ? (percent <= -9.99 ? ` ${Math.floor(shortPer)}` : `${shortPer}`) : ` ${shortPer}`
 
                 const max = list2[3] ? Number(list2[3]) : num;
-                const discount = !max ? 0 : (((max - num) / max) * 100).toFixed(1);
+                const discount = !max ? '0.0' : (((max - num) / max) * 100).toFixed(1);
                 const show = discount > 50 ? '' : (discount >= 10 ? ` -${Math.floor(discount) + 1}%` : `-${discount}%`);
 
                 const mapItem = {
                   name: shortName,
                   num: list[3].length > 5 ?  Number(list[3]).toFixed(2) : (list[3].length > 4 ? ` ${Number(list[3]).toFixed(2)}` : `  ${Number(list[3]).toFixed(2)}`),
                   percent,
-                  shortPer: (percent < 0 || percent > 9.98) ? (percent <= -9.99 ? ` ${Math.floor(shortPer)}` : shortPer) : ` ${shortPer}`,
+                  shortPer: shortPerStr.slice(0, 4),
                   discount,
                   show,
                 };
