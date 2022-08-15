@@ -46,9 +46,9 @@ function fetch() {
 
 fetch();
 setInterval(() => {
+  console.log('---敬畏市场，控制回撤---');
   fetch();
-  // console.log('---敬畏市场，控制回撤---');
-}, 5000);
+}, 20000);
 
 app.listen(8666, () => {
   console.log('开启服务，端口8666');

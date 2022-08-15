@@ -211,6 +211,8 @@ function fetch(total) {
                   shortName = `${name}${empty}`;
                 }
 
+                const shortNum = list[3].length > 5 ?  Number(list[3]).toFixed(2) : (list[3].length > 4 ? ` ${Number(list[3]).toFixed(2)}` : `  ${Number(list[3]).toFixed(2)}`);
+
                 const percent = list2[2] ? Number(list2[2]) : 0;
                 const shortPer = percent.toFixed(1);
                 const shortPerStr = (percent < 0 || percent > 9.98) ? (percent <= -9.99 ? ` ${Math.floor(shortPer)}` : `${shortPer}`) : ` ${shortPer}`
@@ -221,7 +223,7 @@ function fetch(total) {
 
                 const mapItem = {
                   name: shortName,
-                  num: list[3].length > 5 ?  Number(list[3]).toFixed(2) : (list[3].length > 4 ? ` ${Number(list[3]).toFixed(2)}` : `  ${Number(list[3]).toFixed(2)}`),
+                  num: shortNum.slice(0, 6),
                   percent,
                   shortPer: shortPerStr.slice(0, 4),
                   discount,
@@ -238,7 +240,7 @@ function fetch(total) {
           const b = index % length;
           mapList[b].push(ele);
         });
-        // console.clear(); // 可以清屏防止卡顿
+        console.clear(); // 可以清屏防止卡顿
         mapList.forEach(ele => {
           try {
             console.log(
@@ -262,9 +264,9 @@ function fetch(total) {
 fetch(total);
 setInterval(() => {
   // console.clear(); // 可以清屏防止卡顿
+  // console.log('--------------------------敬畏市场，控制回撤--------------------------');
   fetch(total);
-  // console.log('---敬畏市场，控制回撤---');
-}, 5000);
+}, 10000);
 
 app.listen(8668, () => {
   console.log('开启服务，端口8668');
