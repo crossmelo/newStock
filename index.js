@@ -164,12 +164,15 @@ const arr = [
   'sz002241', // geer
   'sz002475', // lixun
   'sz002410', // guanglianda
+  'sz002444', // juxing
 ];
 
 const length = 20;
 const rowNum = 4;
 
 const total = Array.from(new Set([...arr,...filterList])).join();
+
+const codeMap = {};
 
 function fetch(total) {
   return new Promise((resolve, reject) => {
@@ -221,13 +224,22 @@ function fetch(total) {
                 const discount = !max ? '0.0' : (((max - num) / max) * 100).toFixed(1);
                 const show = discount > 50 ? '' : (discount >= 10 ? ` -${Math.floor(discount) + 1}%` : `-${discount}%`);
 
+                const codeArr = codeMap[code] || [];
+                codeArr.push(percent);
+                const filterCodeArr = codeArr.slice(0, 360);
+                codeMap[code] = filterCodeArr;
+                const maxNum = Math.max(...filterCodeArr);
+                const minNum = Math.min(...filterCodeArr);
+
                 const mapItem = {
+                  code,
                   name: shortName,
                   num: shortNum.slice(0, 6),
                   percent,
                   shortPer: shortPerStr.slice(0, 4),
                   discount,
                   show,
+                  speed: (maxNum - minNum).toFixed(2),
                 };
 
                 totalList.push(mapItem);
@@ -244,15 +256,23 @@ function fetch(total) {
         mapList.forEach(ele => {
           try {
             console.log(
-              ele[0].name, ele[0].num, `${ele[0].shortPer}%`, ele[0].discount > 1 ? ele[0].show.red : ele[0].show, '|',
-              ele[1].name, ele[1].num, `${ele[1].shortPer}%`, ele[1].discount > 1 ? ele[1].show.red : ele[1].show, '|',
-              ele[2].name, ele[2].num, `${ele[2].shortPer}%`, ele[2].discount > 1 ? ele[2].show.red : ele[2].show, '|',
-              ele[3].name, ele[3].num, `${ele[3].shortPer}%`, ele[3].discount > 1 ? ele[3].show.red : ele[3].show
+              ele[0].speed > 4 ? ele[0].name.yellow : ele[0].name, ele[0].num, `${ele[0].shortPer}%`, ele[0].discount > 1 ? ele[0].show.red : ele[0].show, '|',
+              ele[1].speed > 4 ? ele[1].name.yellow : ele[1].name, ele[1].num, `${ele[1].shortPer}%`, ele[1].discount > 1 ? ele[1].show.red : ele[1].show, '|',
+              ele[2].speed > 4 ? ele[2].name.yellow : ele[2].name, ele[2].num, `${ele[2].shortPer}%`, ele[2].discount > 1 ? ele[2].show.red : ele[2].show, '|',
+              ele[3].speed > 4 ? ele[3].name.yellow : ele[3].name, ele[3].num, `${ele[3].shortPer}%`, ele[3].discount > 1 ? ele[3].show.red : ele[3].show
             );
           } catch {
-            console.log('-----')
+            console.log('-------------------------------------------------------------------------------------------------------------------')
           }
         })
+        console.log('-------------------------------------------------------------------------------------------------------------------')
+        const speedList = totalList.sort((a, b) => b.speed - a.speed).slice(0, 4);
+        console.log(
+          speedList[0].name, speedList[0].num, `${speedList[0].shortPer}%`, `${speedList[0].speed}%`, '|',
+          speedList[1].name, speedList[1].num, `${speedList[1].shortPer}%`, `${speedList[1].speed}%`, '|',
+          speedList[2].name, speedList[2].num, `${speedList[2].shortPer}%`, `${speedList[2].speed}%`, '|',
+          speedList[3].name, speedList[3].num, `${speedList[3].shortPer}%`, `${speedList[3].speed}%`
+        );
         resolve();
       } catch (error) {
         // reject(error);
