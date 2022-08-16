@@ -170,6 +170,8 @@ const arr = [
 const length = 20;
 const rowNum = 4;
 
+const timeRange = 6 * 60; // 一小时内最大拉升大于4%
+
 const total = Array.from(new Set([...arr,...filterList])).join();
 
 const codeMap = {};
@@ -226,7 +228,7 @@ function fetch(total) {
 
                 const codeArr = codeMap[code] || [];
                 codeArr.push(percent);
-                const filterCodeArr = codeArr.slice(0, 360);
+                const filterCodeArr = codeArr.slice(0, timeRange);
                 codeMap[code] = filterCodeArr;
                 const maxNum = Math.max(...filterCodeArr);
                 const minNum = Math.min(...filterCodeArr);
