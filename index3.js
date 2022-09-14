@@ -46,8 +46,11 @@ function fetch() {
 
 fetch();
 setInterval(() => {
-  console.log('---敬畏市场，控制回撤---');
-  fetch();
+  const hour = new Date().getHours();
+  if ([9, 10, 11, 13, 14].includes(hour)) {
+    console.log('---敬畏市场，控制回撤---');
+    fetch();
+  }
 }, 20000);
 
 app.listen(8666, () => {

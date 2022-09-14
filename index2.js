@@ -135,7 +135,11 @@ function fetch(total) {
 fetch(total);
 setInterval(() => {
   // console.clear(); // 可以清屏防止卡顿
-  fetch(total);
+  
+  const hour = new Date().getHours();
+  if ([9, 10, 11, 13, 14].includes(hour)) {
+    fetch(total);
+  }
   // console.log('---敬畏市场，控制回撤---');
 }, 5000);
 

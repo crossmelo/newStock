@@ -6,6 +6,7 @@
   "scripts": {
     "sl": "node index.js",
     "sl2": "node index3.js",
+    "sl3": "node index4.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

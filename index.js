@@ -176,7 +176,7 @@ const total = Array.from(new Set([...arr,...filterList])).join();
 
 const codeMap = {};
 
-function fetch(total) {
+function fetch(total, needSpeed) {
   return new Promise((resolve, reject) => {
     const url = `http://qt.gtimg.cn/r=${Math.random()}q=${total}`;
     request({ url: url, encoding: null }, (err, response, body) => {
@@ -184,6 +184,7 @@ function fetch(total) {
       try {
         const totalList = [];
         const mapList = [...Array.from({ length }).keys()].map(() => []);
+        const mapList2 = [[], [], []];
         const data = iconv.decode(body, 'gb2312');
         data
           .replace(/\n/gi, '')
@@ -228,9 +229,10 @@ function fetch(total) {
 
                 const codeArr = codeMap[code] || [];
                 codeArr.push(percent);
-                const filterCodeArr = codeArr.slice(0, timeRange);
+                const codeArrLength = codeArr.length;
+                const filterCodeArr = codeArrLength > timeRange ? codeArr.slice(codeArrLength - timeRange, codeArrLength) : codeArr;
                 codeMap[code] = filterCodeArr;
-                const maxNum = Math.max(...filterCodeArr);
+                // const maxNum = Math.max(...filterCodeArr);
                 const minNum = Math.min(...filterCodeArr);
 
                 const mapItem = {
@@ -241,7 +243,8 @@ function fetch(total) {
                   shortPer: shortPerStr.slice(0, 4),
                   discount,
                   show,
-                  speed: (maxNum - minNum).toFixed(2),
+                  speed: needSpeed ? percent - minNum : 0,
+                  speedStr: (percent - minNum).toFixed(1),
                 };
 
                 totalList.push(mapItem);
@@ -264,17 +267,27 @@ function fetch(total) {
               ele[3].speed > 4 ? ele[3].name.yellow : ele[3].name, ele[3].num, `${ele[3].shortPer}%`, ele[3].discount > 1 ? ele[3].show.red : ele[3].show
             );
           } catch {
-            console.log('-------------------------------------------------------------------------------------------------------------------')
+            console.log('-------------------------------------------------------------------------------------------------------------------');
           }
-        })
-        console.log('-------------------------------------------------------------------------------------------------------------------')
-        const speedList = totalList.sort((a, b) => b.speed - a.speed).slice(0, 4);
-        console.log(
-          speedList[0].name, speedList[0].num, `${speedList[0].shortPer}%`, `${speedList[0].speed}%`, '|',
-          speedList[1].name, speedList[1].num, `${speedList[1].shortPer}%`, `${speedList[1].speed}%`, '|',
-          speedList[2].name, speedList[2].num, `${speedList[2].shortPer}%`, `${speedList[2].speed}%`, '|',
-          speedList[3].name, speedList[3].num, `${speedList[3].shortPer}%`, `${speedList[3].speed}%`
-        );
+        });
+        console.log('-------------------------------------------------------------------------------------------------------------------');
+        const speedList = totalList.sort((a, b) => b.speed - a.speed).slice(0, 12);
+        speedList.forEach((ele, index) => {
+          const b = index % 3;
+          mapList2[b].push(ele);
+        });
+        mapList2.forEach(ele => {
+          try {
+            console.log(
+              ele[0].name, ele[0].num, `${ele[0].shortPer}%`, `+${ele[0].speedStr}%`, '|',
+              ele[1].name, ele[1].num, `${ele[1].shortPer}%`, `+${ele[1].speedStr}%`, '|',
+              ele[2].name, ele[2].num, `${ele[2].shortPer}%`, `+${ele[2].speedStr}%`, '|',
+              ele[3].name, ele[3].num, `${ele[3].shortPer}%`, `+${ele[3].speedStr}%`
+            );
+          } catch {
+            console.log('-------------------------------------------------------------------------------------------------------------------');
+          }
+        });
         resolve();
       } catch (error) {
         // reject(error);
@@ -287,7 +300,14 @@ fetch(total);
 setInterval(() => {
   // console.clear(); // 可以清屏防止卡顿
   // console.log('--------------------------敬畏市场，控制回撤--------------------------');
-  fetch(total);
+  
+  const hour = new Date().getHours();
+  const min = new Date().getMinutes();
+  if ([9, 10, 11, 13, 14].includes(hour)) {
+    fetch(total, true);
+  } else if (hour === 9 && min > 20) {
+    fetch(total);
+  }
 }, 10000);
 
 app.listen(8668, () => {
