@@ -5,27 +5,19 @@ const fetch = require('./fetch');
 const arr = [
   'sh113648', // juxing
   'sh113582', // huoju
-  // 'sh118007', // shanshi
-  // 'sh118006', // alading
-  // 'sz123070', // penghui
-  'sz123027', // lanxiao
   'sz128111', // zhongkuang
   'sh113016', // xiaokang
   'sh113537', // wencan
   'sz127007', // huguang
   'sz123138', // silu
-  'sh113643', // fengyu
   'sh110055', // yinli
-  'sh113630', // saiwu
   'sz123140', // tiandi
   'sz128140', // runjian
-  // 'sz123039', // kairun
+  'sz123039', // kairun
   'sz123013', // henghe
   'sh113618', // meinuo
   'sz127057', // panlong
-  'sz123073', // tonghe
   'sz123031', // jingrui
-  'sz123123', // jiangfeng
   'sh113621', // tongcheng
   'sz128101', // lianchuang
 ];

@@ -303,7 +303,7 @@ setInterval(() => {
   
   const hour = new Date().getHours();
   const min = new Date().getMinutes();
-  if ([9, 10, 11, 13, 14].includes(hour)) {
+  if ([10, 11, 13, 14].includes(hour)) {
     fetch(total, true);
   } else if (hour === 9 && min > 20) {
     fetch(total);
