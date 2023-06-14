@@ -172,19 +172,22 @@ const rowNum = 4;
 
 const timeRange = 6 * 60; // 一小时内最大拉升大于4%
 
-const total = Array.from(new Set([...arr,...filterList])).join();
+const totalStockList = Array.from(new Set([...arr,...filterList]));
+const totalStockListLength = totalStockList.length;
+const halfStockListLength = Math.floor(totalStockListLength / 2);
+// console.log(1111, totalStockListLength, halfStockListLength);
+const stockStr1 = totalStockList.slice(0, halfStockListLength).join();
+const stockStr2 = totalStockList.slice(halfStockListLength, totalStockListLength).join();
 
 const codeMap = {};
 
-function fetch(total, needSpeed) {
+function fetch(stockStr, needSpeed) {
   return new Promise((resolve, reject) => {
-    const url = `http://qt.gtimg.cn/r=${Math.random()}q=${total}`;
+    const url = `http://qt.gtimg.cn/r=${Math.random()}q=${stockStr}`;
     request({ url: url, encoding: null }, (err, response, body) => {
       // console.clear(); // 可以清屏防止卡顿
       try {
         const totalList = [];
-        const mapList = [...Array.from({ length }).keys()].map(() => []);
-        const mapList2 = [[], [], []];
         const data = iconv.decode(body, 'gb2312');
         data
           .replace(/\n/gi, '')
@@ -251,52 +254,69 @@ function fetch(total, needSpeed) {
               } catch (error) {}
             }
           });
-        const sortList = totalList.sort((a, b) => b.percent - a.percent).slice(0, length * rowNum);
-        sortList.forEach((ele, index) => {
-          // const a = Math.floor(index / length);
-          const b = index % length;
-          mapList[b].push(ele);
-        });
-        console.clear(); // 可以清屏防止卡顿
-        mapList.forEach(ele => {
-          try {
-            console.log(
-              ele[0].speed > 4 ? ele[0].name.yellow : ele[0].name, ele[0].num, `${ele[0].shortPer}%`, ele[0].discount > 1 ? ele[0].show.red : ele[0].show, '|',
-              ele[1].speed > 4 ? ele[1].name.yellow : ele[1].name, ele[1].num, `${ele[1].shortPer}%`, ele[1].discount > 1 ? ele[1].show.red : ele[1].show, '|',
-              ele[2].speed > 4 ? ele[2].name.yellow : ele[2].name, ele[2].num, `${ele[2].shortPer}%`, ele[2].discount > 1 ? ele[2].show.red : ele[2].show, '|',
-              ele[3].speed > 4 ? ele[3].name.yellow : ele[3].name, ele[3].num, `${ele[3].shortPer}%`, ele[3].discount > 1 ? ele[3].show.red : ele[3].show
-            );
-          } catch {
-            console.log('-------------------------------------------------------------------------------------------------------------------');
-          }
-        });
-        console.log('-------------------------------------------------------------------------------------------------------------------');
-        const speedList = totalList.sort((a, b) => b.speed - a.speed).slice(0, 12);
-        speedList.forEach((ele, index) => {
-          const b = index % 3;
-          mapList2[b].push(ele);
-        });
-        mapList2.forEach(ele => {
-          try {
-            console.log(
-              ele[0].name, ele[0].num, `${ele[0].shortPer}%`, `+${ele[0].speedStr}%`, '|',
-              ele[1].name, ele[1].num, `${ele[1].shortPer}%`, `+${ele[1].speedStr}%`, '|',
-              ele[2].name, ele[2].num, `${ele[2].shortPer}%`, `+${ele[2].speedStr}%`, '|',
-              ele[3].name, ele[3].num, `${ele[3].shortPer}%`, `+${ele[3].speedStr}%`
-            );
-          } catch {
-            console.log('-------------------------------------------------------------------------------------------------------------------');
-          }
-        });
-        resolve();
+        // console.log(22222, totalList.length);
+        resolve(totalList);
       } catch (error) {
         // reject(error);
+        return []
       }
     });
   });
 };
 
-fetch(total);
+async function handleData(needSpeed) {
+    // console.clear(); // 可以清屏防止卡顿
+    try {
+      const resultList1 = await fetch(stockStr1, needSpeed)
+      const resultList2 = await fetch(stockStr2, needSpeed)
+      const totalList = [...resultList1, ...resultList2];
+      const mapList = [...Array.from({ length }).keys()].map(() => []);
+      const mapList2 = [[], [], []];
+      
+      const sortList = totalList.sort((a, b) => b.percent - a.percent).slice(0, length * rowNum);
+      sortList.forEach((ele, index) => {
+        // const a = Math.floor(index / length);
+        const b = index % length;
+        mapList[b].push(ele);
+      });
+      console.clear(); // 可以清屏防止卡顿
+      mapList.forEach(ele => {
+        try {
+          console.log(
+            ele[0].speed > 4 ? ele[0].name.yellow : ele[0].name, ele[0].num, `${ele[0].shortPer}%`, ele[0].discount > 1 ? ele[0].show.red : ele[0].show, '|',
+            ele[1].speed > 4 ? ele[1].name.yellow : ele[1].name, ele[1].num, `${ele[1].shortPer}%`, ele[1].discount > 1 ? ele[1].show.red : ele[1].show, '|',
+            ele[2].speed > 4 ? ele[2].name.yellow : ele[2].name, ele[2].num, `${ele[2].shortPer}%`, ele[2].discount > 1 ? ele[2].show.red : ele[2].show, '|',
+            ele[3].speed > 4 ? ele[3].name.yellow : ele[3].name, ele[3].num, `${ele[3].shortPer}%`, ele[3].discount > 1 ? ele[3].show.red : ele[3].show
+          );
+        } catch {
+          console.log('-------------------------------------------------------------------------------------------------------------------');
+        }
+      });
+      console.log('-------------------------------------------------------------------------------------------------------------------');
+      const speedList = totalList.sort((a, b) => b.speed - a.speed).slice(0, 12);
+      speedList.forEach((ele, index) => {
+        const b = index % 3;
+        mapList2[b].push(ele);
+      });
+      mapList2.forEach(ele => {
+        try {
+          console.log(
+            ele[0].name, ele[0].num, `${ele[0].shortPer}%`, `+${ele[0].speedStr}%`, '|',
+            ele[1].name, ele[1].num, `${ele[1].shortPer}%`, `+${ele[1].speedStr}%`, '|',
+            ele[2].name, ele[2].num, `${ele[2].shortPer}%`, `+${ele[2].speedStr}%`, '|',
+            ele[3].name, ele[3].num, `${ele[3].shortPer}%`, `+${ele[3].speedStr}%`
+          );
+        } catch {
+          console.log('-------------------------------------------------------------------------------------------------------------------');
+        }
+      });
+      resolve();
+    } catch (error) {
+      // reject(error);
+    }
+}
+
+handleData();
 setInterval(() => {
   // console.clear(); // 可以清屏防止卡顿
   // console.log('--------------------------敬畏市场，控制回撤--------------------------');
@@ -304,9 +324,9 @@ setInterval(() => {
   const hour = new Date().getHours();
   const min = new Date().getMinutes();
   if ([10, 11, 13, 14].includes(hour)) {
-    fetch(total, true);
+    handleData(true);
   } else if (hour === 9 && min > 20) {
-    fetch(total);
+    handleData();
   }
 }, 10000);
 
